@@ -2,15 +2,15 @@ name: 'Alfabet Code Block Check $(BuildID)'
 
 trigger: none
 
-# resources:
-#   repositories:
-#     - repository: script-source
-#       name: devsecops-tf-ado-helper
-#       type: git
-#       ref: main
-
 pool:
   vmImage: ubuntu-latest
+
+resources:
+  repositories:
+    - repository: script-source
+      name: devsecops-tf-ado-helper
+      type: git
+      ref: main
 
 variables:
   repoAddress: $[replace(variables['System.PullRequest.SourceRepositoryURI'], 'https:', '')]
@@ -29,14 +29,12 @@ jobs:
       clean: true
       fetchDepth: 1
       displayName: 'checkout pull request code'
-      
+    
     - checkout: script-source
       displayName: 'checkout script source code'
-    
-    - script: ls
 
     - task: PythonScript@0
       inputs:
-        scriptPath: code-check-items/alfabet_code_check.py
+        scriptPath: devsecops-tf-ado-helper/code-check-items/alfabet_code_check.py
         arguments: $(remoteRepoName)/README.md
       displayName: 'check alfabet code block items'
