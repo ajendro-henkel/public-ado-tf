@@ -2,12 +2,12 @@ name: 'Alfabet Code Block Check $(BuildID)'
 
 trigger: none
 
-resources:
-  repositories:
-    - repository: script-source
-      name: terraform-scripts
-      type: git
-      ref: main
+# resources:
+#   repositories:
+#     - repository: script-source
+#       name: devsecops-tf-ado-helper
+#       type: git
+#       ref: main
 
 pool:
   vmImage: ubuntu-latest
@@ -37,6 +37,6 @@ jobs:
 
     - task: PythonScript@0
       inputs:
-        scriptPath: terraform-scripts/build-validation-alfabet/code-check-items/alfabet_code_check.py
+        scriptPath: code-check-items/alfabet_code_check.py
         arguments: $(remoteRepoName)/README.md
       displayName: 'check alfabet code block items'
