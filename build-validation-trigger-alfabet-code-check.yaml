@@ -1,0 +1,42 @@
+name: 'Alfabet Code Block Check $(BuildID)'
+
+trigger: none
+
+resources:
+  repositories:
+    - repository: script-source
+      name: terraform-scripts
+      type: git
+      ref: main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  repoAddress: $[replace(variables['System.PullRequest.SourceRepositoryURI'], 'https:', '')]
+
+jobs:
+- job: alfabetBlockCodeCheck
+  displayName: 'alfabet code block check items'
+  steps:
+    - pwsh: |
+        $remoteRepoNameSplited = '$(System.PullRequest.SourceRepositoryURI)'.split("/")[-1]
+        Write-Host "##vso[task.setvariable variable=remoteRepoName]$remoteRepoNameSplited"
+      displayName: 'expose remote repository name: $(remoteRepoName)'
+
+    # checkout the source branch (typically the feature branch not main)
+    - checkout: git://$(repoAddress)@$(System.PullRequest.SourceBranch)
+      clean: true
+      fetchDepth: 1
+      displayName: 'checkout pull request code'
+      
+    - checkout: script-source
+      displayName: 'checkout script source code'
+    
+    - script: ls
+
+    - task: PythonScript@0
+      inputs:
+        scriptPath: terraform-scripts/build-validation-alfabet/code-check-items/alfabet_code_check.py
+        arguments: $(remoteRepoName)/README.md
+      displayName: 'check alfabet code block items'
